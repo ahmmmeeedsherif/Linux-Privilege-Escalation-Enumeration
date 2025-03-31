@@ -115,7 +115,7 @@ To find groups and users in those groups, use:
 cat /etc/group
 ```
 This lists all groups on the system along with their associated users.
-```
+
 To find the users in the group, use:
 ```
 ahmed💀ahmed:~$  getent group sudo(group name)
