@@ -1,6 +1,3 @@
-Here is the content formatted in Markdown (MD):
-
-```markdown
 # Linux Privilege Escalation Enumeration
 
 ## Basic Enumeration
@@ -216,5 +213,3 @@ To create a password hash for `/etc/shadow`, use:
 mkpasswd -m sha-512 newpassword    # SHA-512 is commonly used in `/etc/shadow`.
 ```
 ```
-
----
